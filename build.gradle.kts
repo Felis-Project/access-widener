@@ -1,10 +1,10 @@
 plugins {
-    id("felis-dam") version "1.8.1-alpha"
+    id("felis-dam") version "1.9.1-alpha"
     `maven-publish`
 }
 
 group = "felis"
-version = "1.0.0-alpha"
+version = "1.1.0-alpha"
 
 loaderMake {
     version = "1.20.6"
@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation("felis:felis:1.3.1-alpha")
+    implementation("felis:felis:1.4.0-alpha")
     implementation("net.fabricmc:access-widener:2.1.0")
 }
 
