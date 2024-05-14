@@ -1,10 +1,10 @@
 plugins {
-    id("felis-dam") version "1.9.1-alpha"
+    id("felis-dam") version "1.9.2-alpha"
     `maven-publish`
 }
 
 group = "felis"
-version = "1.1.0-alpha"
+version = "1.2.0-alpha"
 
 loaderMake {
     version = "1.20.6"
@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation("felis:felis:1.4.0-alpha")
+    implementation("felis:felis:1.5.0-alpha")
     implementation("net.fabricmc:access-widener:2.1.0")
 }
 
@@ -24,7 +24,7 @@ kotlin {
 }
 
 tasks.processResources {
-    filesMatching("mods.toml") {
+    filesMatching("felis.mod.toml") {
         expand("version" to version)
     }
 }

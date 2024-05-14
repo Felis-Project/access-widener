@@ -1,0 +1,9 @@
+schema = 1
+name="Access Widener Test"
+version = "1.0.0-alpha"
+description = "Testmod"
+modid = "testmod"
+
+[[entrypoints]]
+id = "loader_plugin"
+specifier = "testmod.Testmod"

@@ -1,3 +1,4 @@
+schema = 1
 name="Access Widener"
 version = "${version}"
 description = "An implementation of Fabric's AccessWidener for Felis"
@@ -5,4 +6,4 @@ modid = "access-widener"
 
 [[entrypoints]]
 id = "loader_plugin"
-path = "felis.aw.AccessWidenerLoaderPlugin"
+specifier = "felis.aw.AccessWidenerLoaderPlugin"

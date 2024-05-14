@@ -1,13 +1,12 @@
 package felis.aw
 
-import felis.FelisLaunchEnvironment
 import felis.LoaderPluginEntrypoint
 import felis.ModLoader
-import felis.meta.ModMeta
+import felis.launcher.OptionScope
+import felis.meta.ModMetadataExtended
 import net.fabricmc.accesswidener.AccessWidener
 import net.fabricmc.accesswidener.AccessWidenerClassVisitor
 import net.fabricmc.accesswidener.AccessWidenerReader
-import net.peanuuutz.tomlkt.getStringOrNull
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
@@ -17,21 +16,20 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
-object AccessWidenerLoaderPlugin : LoaderPluginEntrypoint {
-    private val buildinAccessWideners: List<Path> by FelisLaunchEnvironment.OptionKey(
-        "felis.access.wideners",
-        FelisLaunchEnvironment.DefaultValue.Value(emptyList())
-    ) { it.split(File.pathSeparator).filter(String::isNotEmpty).map(Paths::get) }
+object AccessWidenerLoaderPlugin : LoaderPluginEntrypoint, OptionScope {
+    private val buildinAccessWideners: List<Path> by option("felis.access.wideners", default(emptyList())) {
+        it.split(File.pathSeparator).filter(String::isNotEmpty).map(Paths::get)
+    }
     private val logger = LoggerFactory.getLogger(AccessWidener::class.java)
     private val aw = AccessWidener()
 
-    val ModMeta.accessWidener: String? get() = this.toml.getStringOrNull("access-widener")
+    val ModMetadataExtended.accessWidener: String? get() = this["access-widener"]?.toString()
 
     override fun onLoaderInit() {
         this.logger.info("Initializing Access Widener for 'named' namespace")
         val awReader = AccessWidenerReader(this.aw)
 
-        val configCount = ModLoader.discoverer.mapNotNull { it.meta.accessWidener }.fold(0) { acc, path ->
+        val configCount = ModLoader.discoverer.mods.mapNotNull { it.metadata.accessWidener }.fold(0) { acc, path ->
             val increasedAmount = ModLoader.classLoader.getResourceAsStream(path)
                 ?.use {
                     awReader.read(it.readAllBytes(), "named")
