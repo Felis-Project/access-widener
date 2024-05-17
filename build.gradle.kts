@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "felis"
-version = "1.2.0-alpha"
+version = "1.3.0-alpha"
 
 loaderMake {
     version = "1.20.6"
@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation("felis:felis:1.5.0-alpha")
+    implementation("felis:felis:1.5.2-alpha")
     implementation("net.fabricmc:access-widener:2.1.0")
 }
 
