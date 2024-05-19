@@ -2,15 +2,14 @@ package felis.aw
 
 import felis.LoaderPluginEntrypoint
 import felis.ModLoader
-import felis.launcher.OptionScope
+import felis.launcher.DefaultValue
+import felis.launcher.OptionKey
 import felis.meta.ModMetadataExtended
 import net.fabricmc.accesswidener.AccessWidener
 import net.fabricmc.accesswidener.AccessWidenerClassVisitor
 import net.fabricmc.accesswidener.AccessWidenerFormatException
 import net.fabricmc.accesswidener.AccessWidenerReader
 import net.fabricmc.accesswidener.TransitiveOnlyFilter
-import org.objectweb.asm.ClassReader
-import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -19,8 +18,8 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
-object AccessWidenerLoaderPlugin : LoaderPluginEntrypoint, OptionScope {
-    private val localAws: List<Path> by option("felis.access.wideners", default(emptyList())) {
+object AccessWidenerLoaderPlugin : LoaderPluginEntrypoint {
+    private val localAws: List<Path> by OptionKey("felis.access.wideners", DefaultValue.Value(emptyList())) {
         it.split(File.pathSeparator).filter(String::isNotEmpty).map(Paths::get)
     }
     private val logger = LoggerFactory.getLogger(AccessWidener::class.java)
@@ -65,14 +64,10 @@ object AccessWidenerLoaderPlugin : LoaderPluginEntrypoint, OptionScope {
 
         this.logger.info("Located $configs access widener configuration${if (configs == 1) "" else "s"}. $locals locals and $transitives transitives")
 
-        ModLoader.transformer.registerTransformation {
-            if (it.name in this.aw.targets) {
-                logger.debug("Transforming ${it.name} with AccessWidener")
-                val reader = ClassReader(it.bytes)
-                val writer = ClassWriter(0)
-                val visitor = AccessWidenerClassVisitor.createClassVisitor(Opcodes.ASM9, writer, this.aw)
-                reader.accept(visitor, 0)
-                it.newBytes(writer.toByteArray())
+        ModLoader.transformer.registerTransformation { container ->
+            if (container.name in this.aw.targets) {
+                logger.debug("Transforming ${container.name} with AccessWidener")
+                container.visitor { del -> AccessWidenerClassVisitor.createClassVisitor(Opcodes.ASM9, del, this.aw) }
             }
         }
     }
