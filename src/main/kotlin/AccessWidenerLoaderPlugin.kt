@@ -23,13 +23,14 @@ object AccessWidenerLoaderPlugin : LoaderPluginEntrypoint {
         it.split(File.pathSeparator).filter(String::isNotEmpty).map(Paths::get)
     }
     private val logger = LoggerFactory.getLogger(AccessWidener::class.java)
-    private val aw = AccessWidener()
+    @Suppress("MemberVisibilityCanBePrivate") // to allow modification to this from the outside
+    val aw = AccessWidener()
 
-    @Suppress("MemberVisibilityCanBePrivate") // allow mods to access this
+    @Suppress("MemberVisibilityCanBePrivate") // allow other mods to access this
     val ModMetadataExtended.accessWidener: String? get() = this["access-widener"]?.toString()
 
     override fun onLoaderInit() {
-        this.logger.info("Initializing Access Widener for 'named' namespace")
+        this.logger.info("Initializing Access Widener for 'mojmaps' namespace")
         val transitiveReader = AccessWidenerReader(
             if (ModLoader.isAuditing) {
                 // only allow transitives in case we are auditing

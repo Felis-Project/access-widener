@@ -7,3 +7,7 @@ modid = "access-widener"
 [[entrypoints]]
 id = "loader_plugin"
 specifier = "felis.aw.AccessWidenerLoaderPlugin"
+
+[[dependencies.requires]]
+modid = "felis"
+version = ">=1.8.0-alpha"
