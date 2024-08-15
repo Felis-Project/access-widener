@@ -23,6 +23,7 @@ object AccessWidenerLoaderPlugin : LoaderPluginEntrypoint {
         it.split(File.pathSeparator).filter(String::isNotEmpty).map(Paths::get)
     }
     private val logger = LoggerFactory.getLogger(AccessWidener::class.java)
+
     @Suppress("MemberVisibilityCanBePrivate") // to allow modification to this from the outside
     val aw = AccessWidener()
 
@@ -63,12 +64,14 @@ object AccessWidenerLoaderPlugin : LoaderPluginEntrypoint {
 
         val configs = locals + transitives
 
-        this.logger.info("Located $configs access widener configuration${if (configs == 1) "" else "s"}. $locals locals and $transitives transitives")
+        this.logger.info("Located $configs access widener configuration${if (configs == 1) "" else "s"} ($locals locals and $transitives transitives)")
 
         ModLoader.transformer.registerTransformation { container ->
             if (container.name in this.aw.targets) {
-                logger.debug("Transforming ${container.name} with AccessWidener")
+                this.logger.debug("Transforming ${container.name} with AccessWidener")
                 container.visitor { del -> AccessWidenerClassVisitor.createClassVisitor(Opcodes.ASM9, del, this.aw) }
+            } else {
+                container
             }
         }
     }
